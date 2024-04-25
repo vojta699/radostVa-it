@@ -1,6 +1,3 @@
-const Ajv = require("ajv");
-const ajv = new Ajv();
-
 const userDao = require("../../dao/user-dao.js");
 
 const schema = {
@@ -14,9 +11,7 @@ const schema = {
 
 async function DeleteAbl(req, res) {
   try {
-    // get request query or body
     const { id } = req.params
-
 
     userDao.remove(id);
 

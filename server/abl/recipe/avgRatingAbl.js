@@ -1,5 +1,6 @@
-const recipeDao = require("../../dao/recipe-dao.js");
 const ratingDao = require("../../dao/rating-dao.js")
+
+// průměrné hodnocení konkrétního receptu
 
 async function AvgRatingAbl(req, res) {
   try {

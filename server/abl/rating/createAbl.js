@@ -32,6 +32,8 @@ async function CreateAbl(req, res) {
       return;
     }
 
+    // kontrola, zda uživatel již nehodnotil daný recept
+
     const ratingList = ratingDao.list();
     const userHasRating = ratingList.some((r) => r.recipe_ID === rating.recipe_ID && r.user_ID === rating.user_ID);
     if (userHasRating) {

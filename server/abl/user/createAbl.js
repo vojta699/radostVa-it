@@ -32,7 +32,9 @@ async function CreateAbl(req, res) {
       });
       return;
     }
-
+    
+    // kontrola zda uživatel s daným emailem již existuje
+    
     const userList = userDao.list();
     const emailExists = userList.some((u) => u.email === user.email);
     if (emailExists) {

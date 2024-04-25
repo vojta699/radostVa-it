@@ -1,6 +1,3 @@
-const Ajv = require("ajv");
-const ajv = new Ajv();
-
 const userDao = require("../../dao/user-dao.js");
 
 const schema = {
@@ -14,11 +11,7 @@ const schema = {
 
 async function GetAbl(req, res) {
   try {
-    // get request query or body
     const { id } = req.params
-
-
-    // read user by given id
     const user = userDao.get(id);
     if (!user) {
       res.status(404).json({
