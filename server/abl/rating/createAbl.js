@@ -10,9 +10,10 @@ const schema = {
   type: "object",
   properties: {
     rating: { enum: [1, 2, 3, 4, 5] },
-    recipe_ID: { type: "string", minLength: 32, maxLength: 32 }
+    recipe_ID: { type: "string", minLength: 32, maxLength: 32 },
+    user_ID: { type: "string", minLength: 32, maxLength: 32 }
   },
-  required: ["rating", "recipe_ID"],
+  required: ["rating", "recipe_ID", "user_ID"],
   additionalProperties: false,
 };
 
@@ -27,6 +28,16 @@ async function CreateAbl(req, res) {
         code: "dtoInIsNotValid",
         message: "dtoIn is not valid",
         validationError: ajv.errors,
+      });
+      return;
+    }
+
+    const ratingList = ratingDao.list();
+    const userHasRating = ratingList.some((r) => r.recipe_ID === rating.recipe_ID && r.user_ID === rating.user_ID);
+    if (userHasRating) {
+      res.status(400).json({
+        code: "ratingAlreadyExists",
+        message: `Rating from this user already exist`,
       });
       return;
     }

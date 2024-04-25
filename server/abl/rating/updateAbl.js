@@ -9,9 +9,10 @@ const ratingDao = require("../../dao/rating-dao.js");
 const schema = {
   type: "object",
   properties: {
-    id: { type: "string", minLength: 32, maxLength: 32, readOnly: true },
+    id: { type: "string", minLength: 32, maxLength: 32 },
     rating: { enum: [1, 2, 3, 4, 5] },
-    recipe_ID: { type: "string", minLength: 32, maxLength: 32 }
+    recipe_ID: { type: "string", minLength: 32, maxLength: 32 },
+    user_ID: { type: "string", minLength: 32, maxLength: 32 }
   },
   additionalProperties: false,
 };
@@ -20,6 +21,15 @@ async function UpdateAbl(req, res) {
   try {
     const { id } = req.params
     let rating = req.body
+
+    // Kontrola, ID klíče nelze aktualizovat
+    if (rating.id !== undefined || rating.recipe_ID !== undefined || rating.user_ID !== undefined) {
+      res.status(400).json({
+        code: "readOnlyFields",
+        message: "Fields 'id', 'recipe_ID', and 'user_ID' cannot be updated",
+      });
+      return;
+    }
 
     // validate input
     const valid = ajv.validate(schema, rating);
@@ -31,6 +41,7 @@ async function UpdateAbl(req, res) {
       });
       return;
     }
+
     rating.id = id
     const updatedrating = ratingDao.update(rating);
     if (!updatedrating) {

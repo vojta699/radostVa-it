@@ -59,6 +59,7 @@ function list() {
 
 
 module.exports = {
+  get,
   create,
   list,
   update

@@ -27,7 +27,9 @@ const additionalSchemaMethod = {
 const schema = {
   type: "object",
   properties: {
+    id: { type: "string", minLength: 32, maxLength: 32 },
     name: { type: "string", minLength: 3, maxLength: 20 },
+    user_ID: { type: "string", minLength: 32, maxLength: 32 },
     countryOfOrigin: { enum: Object.values(Country) },
     portion: { enum: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
     materials: additionalSchemaMaterials,
@@ -40,6 +42,15 @@ async function UpdateAbl(req, res) {
   try {
     const { id } = req.params
     let recipe = req.body;
+
+    // Kontrola, ID klíče nelze aktualizovat
+    if (recipe.id !== undefined || recipe.user_ID !== undefined) {
+      res.status(400).json({
+        code: "readOnlyFields",
+        message: "Fields 'id' and 'user_ID' cannot be updated",
+      });
+      return;
+    }
     
     // validate input
     const valid = ajv.validate(schema, recipe);

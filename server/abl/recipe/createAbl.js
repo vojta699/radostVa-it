@@ -30,12 +30,13 @@ const schema = {
   type: "object",
   properties: {
     name: { type: "string", minLength: 3, maxLength: 20 },
+    user_ID: { type: "string", minLength: 32, maxLength: 32 },
     countryOfOrigin: { enum: Object.values(Country) },
     portion: { enum: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
     materials: additionalSchemaMaterials,
     method: additionalSchemaMethod
   },
-  required: ["name", "countryOfOrigin", "portion", "materials", "method"],
+  required: ["name", "user_ID", "countryOfOrigin", "portion", "materials", "method"],
   additionalProperties: false,
 };
 

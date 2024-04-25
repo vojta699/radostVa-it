@@ -8,7 +8,7 @@ const userDao = require("../../dao/user-dao.js");
 const schema = {
   type: "object",
   properties: {
-    id: { type: "string", minLength: 32, maxLength: 32, readOnly: true },
+    id: { type: "string", minLength: 32, maxLength: 32 },
     name: { type: "string", minLength: 3, maxLength: 20 },
     email: { type: "string", format: "email" },
   },
@@ -19,6 +19,15 @@ async function UpdateAbl(req, res) {
   try {
     const { id } = req.params
     let user = req.body;
+
+    // Kontrola, ID klíče nelze aktualizovat
+    if (user.id !== undefined) {
+      res.status(400).json({
+        code: "readOnlyFields",
+        message: "Field 'id' cannot be updated",
+      });
+      return;
+    }
 
     // validate input
     const valid = ajv.validate(schema, user);
