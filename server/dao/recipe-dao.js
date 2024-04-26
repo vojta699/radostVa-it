@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
-const { log } = require("console");
 
 const recipeFolderPath = path.join(__dirname, "storage", "recipeList");
 
