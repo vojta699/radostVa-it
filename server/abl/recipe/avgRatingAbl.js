@@ -4,8 +4,8 @@ const ratingDao = require("../../dao/rating-dao.js")
 
 async function AvgRatingAbl(req, res) {
   try {
-    const { id } = req.params // id receptu
-    const filteredObjects = ratingDao.list().filter((element) => element.recipe_ID === id); // pole hodnocení s konkrétním id receptu
+    const recipeId = req.params.recipeid // id receptu
+    const filteredObjects = ratingDao.list().filter((element) => element.recipe_ID === recipeId); // pole hodnocení s konkrétním id receptu
     let ratingSum = 0
     for(let i = 0; i < filteredObjects.length; i++){
         ratingSum = ratingSum + filteredObjects[i].rating

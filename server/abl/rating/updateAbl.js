@@ -19,7 +19,7 @@ const schema = {
 
 async function UpdateAbl(req, res) {
   try {
-    const { id } = req.params
+    const ratingId = req.params.ratingid
     let rating = req.body
 
     // Kontrola, ID klíče nelze aktualizovat
@@ -42,7 +42,7 @@ async function UpdateAbl(req, res) {
       return;
     }
 
-    rating.id = id
+    rating.id = ratingId
     const updatedrating = ratingDao.update(rating);
     if (!updatedrating) {
       res.status(404).json({

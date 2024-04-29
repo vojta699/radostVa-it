@@ -34,7 +34,8 @@ const schema = {
     countryOfOrigin: { enum: Object.values(Country) },
     portion: { enum: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
     materials: additionalSchemaMaterials,
-    method: additionalSchemaMethod
+    method: additionalSchemaMethod,
+    imgName: { type: "string", minLength: 36, maxLength: 36 }
   },
   required: ["name", "user_ID", "countryOfOrigin", "portion", "materials", "method"],
   additionalProperties: false,

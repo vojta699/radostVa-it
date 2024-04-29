@@ -3,6 +3,7 @@ const addFormats = require("ajv-formats").default;
 const ajv = new Ajv();
 addFormats(ajv);
 
+const { Roles } = require("../../helpers/enumRoles.js");
 const validateDateTime = require("../../helpers/validate-date-time.js");
 ajv.addFormat("date-time", { validate: validateDateTime });
 
@@ -13,6 +14,7 @@ const schema = {
   properties: {
     name: { type: "string", minLength: 3, maxLength: 20 },
     email: { type: "string", format: "email" },
+    role: { enum: Object.values(Roles) }
   },
   required: ["name", "email"],
   additionalProperties: false,

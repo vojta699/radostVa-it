@@ -42,8 +42,20 @@ function remove(fileName) {
   }
 }
 
+// Metoda na získání obrázku
+function get(fileName) {
+  try {
+    const filePath = path.join(imgFolderPath, fileName);
+    const fileData = fs.readFileSync(filePath);
+    return fileData;
+  } catch (error) {
+    if (error.code === "ENOENT") return null;
+    throw { code: "failedToReadrecipe", message: error.message };
+  }
+}
   
   module.exports = {
     upload,
-    remove
+    remove,
+    get
   };

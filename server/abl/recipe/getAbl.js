@@ -11,13 +11,13 @@ const schema = {
 
 async function GetAbl(req, res) {
   try {
-    const { id } = req.params
-    const recipe = recipeDao.get(id);
+    const recipeId = req.params.recipeid
+    const recipe = recipeDao.get(recipeId);
     
     if (!recipe) {
       res.status(404).json({
         code: "recipeNotFound",
-        message: `recipe ${id} not found`,
+        message: `recipe ${recipeId} not found`,
       });
       return;
     }

@@ -40,7 +40,7 @@ const schema = {
 
 async function UpdateAbl(req, res) {
   try {
-    const { id } = req.params
+    const recipeId = req.params.recipeid
     let recipe = req.body;
 
     // Kontrola, ID klíče nelze aktualizovat
@@ -63,7 +63,7 @@ async function UpdateAbl(req, res) {
       return;
     }
     
-    recipe.id = id
+    recipe.id = recipeId
     const updatedrecipe = recipeDao.update(recipe);
     if (!updatedrecipe) {
       res.status(404).json({
