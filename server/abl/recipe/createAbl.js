@@ -9,21 +9,27 @@ const { Country } = require("../../helpers/enumCountry.js");
 const { Units } = require("../../helpers/enumUnit.js");
 
 const additionalSchemaMaterials = {
-  type: "object",
-  properties: {
+  type: "array",
+  items: {
+    type: "object",
+    properties: {
       name: { type: "string", minLength: 3, maxLength: 20 },
       value: { type: "number" },
       unit: { enum: Object.values(Units) }
+    },
+    required: ["name", "value", "unit"]
   },
-  required: ["name", "value", "unit"]
 };
 
 const additionalSchemaMethod = {
-  type: "object",
-  properties: {
+  type: "array",
+  items: {
+    type: "object",
+    properties: {
       steps: { type: "string", maxLength: 300 }
+    },
+    required: ["steps"]
   },
-  required: ["steps"]
 };
 
 const schema = {
@@ -54,6 +60,11 @@ async function CreateAbl(req, res) {
         validationError: ajv.errors,
       });
       return;
+    }
+
+    // default image
+    if (recipe.imgName === undefined) {
+      recipe.imgName = "66dcf3ba9b55edc3abda45e142b02f46.png"
     }
 
     recipe = recipeDao.create(recipe);

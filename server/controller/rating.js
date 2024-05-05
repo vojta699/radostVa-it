@@ -3,9 +3,8 @@ const router = express.Router();
 
 const CreateAbl = require("../abl/rating/createAbl");
 const UpdateAbl = require("../abl/rating/updateAbl")
-const AuthUserAbl = require("../abl/rating/authorisationAbl")
 
-router.post("/create", AuthUserAbl, CreateAbl);
-router.post("/update/:ratingid/:userid", AuthUserAbl, UpdateAbl)
+router.post("/create", CreateAbl);
+router.post("/update/:ratingid/:userid", UpdateAbl)
 
 module.exports = router;

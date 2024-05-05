@@ -1,3 +1,8 @@
+const Ajv = require("ajv");
+const addFormats = require("ajv-formats").default;
+const ajv = new Ajv();
+addFormats(ajv);
+
 const recipeDao = require("../../dao/recipe-dao.js");
 
 const schema = {
@@ -11,13 +16,25 @@ const schema = {
 
 async function GetAbl(req, res) {
   try {
-    const recipeId = req.params.recipeid
-    const recipe = recipeDao.get(recipeId);
+    const id = req.params
     
+    // validate input
+    const valid = ajv.validate(schema, id);
+    if (!valid) {
+      res.status(400).json({
+        code: "dtoInIsNotValid",
+        message: "dtoIn is not valid",
+        validationError: ajv.errors,
+      });
+      return;
+    }
+
+    // Ověření zda recept existuje
+    const recipe = recipeDao.get(id.id);
     if (!recipe) {
       res.status(404).json({
         code: "recipeNotFound",
-        message: `recipe ${recipeId} not found`,
+        message: `recipe ${id.id} not found`,
       });
       return;
     }

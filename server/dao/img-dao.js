@@ -26,7 +26,7 @@ const storage = multer.diskStorage({
      
     },
     limits: { fileSize: 2000000 }, // max 2MB
-   }).single("file")
+   }).single("file") // pouze jeden soubor, klíč musí být file
   
 // Metoda na odstranění obrázku
 function remove(fileName) {

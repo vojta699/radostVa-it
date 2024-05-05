@@ -4,26 +4,34 @@ const ajv = new Ajv();
 addFormats(ajv);
 
 const recipeDao = require("../../dao/recipe-dao.js");
+const userDao = require("../../dao/user-dao.js");
 const { Country } = require("../../helpers/enumCountry.js");
 const { Units } = require("../../helpers/enumUnit.js");
-
+// schema materials
 const additionalSchemaMaterials = {
-  type: "object",
-  properties: {
-      id: { type: "string", minLength: 32, maxLength: 32, readOnly: true },
+  type: "array",
+  items: {
+    type: "object",
+    properties: {
       name: { type: "string", minLength: 3, maxLength: 20 },
       value: { type: "number" },
       unit: { enum: Object.values(Units) }
+    },
+    required: ["name", "value", "unit"]
   },
 };
-
+// schema method
 const additionalSchemaMethod = {
-  type: "object",
-  properties: {
+  type: "array",
+  items: {
+    type: "object",
+    properties: {
       steps: { type: "string", maxLength: 300 }
+    },
+    required: ["steps"]
   },
 };
-
+// body
 const schema = {
   type: "object",
   properties: {
@@ -37,22 +45,24 @@ const schema = {
   },
   additionalProperties: false,
 };
+// params
+const schema2 = {
+  type: "object",
+  properties: {
+    recipeid: { type: "string", minLength: 32, maxLength: 32 },
+    userid: { type: "string", minLength: 32, maxLength: 32 },
+  },
+  required: ["recipeid", "userid"],
+  additionalProperties: false,
+};
 
 async function UpdateAbl(req, res) {
   try {
     const recipeId = req.params.recipeid
     let recipe = req.body;
+    const ids = req.params
 
-    // Kontrola, ID klíče nelze aktualizovat
-    if (recipe.id !== undefined || recipe.user_ID !== undefined) {
-      res.status(400).json({
-        code: "readOnlyFields",
-        message: "Fields 'id' and 'user_ID' cannot be updated",
-      });
-      return;
-    }
-    
-    // validate input
+    // validate input body
     const valid = ajv.validate(schema, recipe);
     if (!valid) {
       res.status(400).json({
@@ -62,16 +72,40 @@ async function UpdateAbl(req, res) {
       });
       return;
     }
-    
-    recipe.id = recipeId
-    const updatedrecipe = recipeDao.update(recipe);
-    if (!updatedrecipe) {
-      res.status(404).json({
-        code: "recipeNotFound",
-        message: `recipe ${recipe.id} not found`,
+
+    // validate input params
+    const valid2 = ajv.validate(schema2, ids);
+    if (!valid2) {
+      res.status(400).json({
+        code: "dtoInIsNotValid",
+        message: "dtoIn is not valid",
+        validationError: ajv.errors,
       });
       return;
     }
+
+    // autorizace uživatele + existence receptu
+    const validationOfRecipe = recipeDao.get(ids.recipeid)
+    const validationOfUser = userDao.get(ids.userid)
+    if (validationOfUser === null) {
+      return res.status(400).json({ code: "login", message: "You have to log in" })
+    } else if (validationOfRecipe === null) {
+      return res.status(400).json({ code: "recipeNotFound", message: "recipe does not exist" })
+    } else if (validationOfUser.id !== validationOfRecipe.user_ID && validationOfUser.role !== "admin") {
+      return res.status(400).json({ code: "noPermission", message: "You dont have permision" })
+    }
+
+    // Kontrola, ID klíče nelze aktualizovat
+    if (recipe.id !== undefined || recipe.user_ID !== undefined) {
+      res.status(400).json({
+        code: "readOnlyFields",
+        message: "Fields 'id' and 'user_ID' cannot be updated",
+      });
+      return;
+    }
+
+    recipe.id = recipeId
+    const updatedrecipe = recipeDao.update(recipe);
 
     res.json(updatedrecipe);
   } catch (e) {

@@ -1,7 +1,6 @@
 const ratingDao = require("../../dao/rating-dao.js")
 
 // průměrné hodnocení konkrétního receptu
-
 async function AvgRatingAbl(req, res) {
   try {
     const recipeId = req.params.recipeid // id receptu
@@ -13,7 +12,10 @@ async function AvgRatingAbl(req, res) {
 
     const rating = ratingSum / filteredObjects.length // průměrné hodnocení
 
-    res.json(rating);
+    res.json({
+      "avgRating": rating,
+      "recipe_ID": recipeId
+  });
   } catch (e) {
     res.status(500).json({ message: e.message });
   }

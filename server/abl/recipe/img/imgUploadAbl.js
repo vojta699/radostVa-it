@@ -8,7 +8,10 @@ async function UploadAbl(req, res) {
     if (err instanceof multer.MulterError){
       res.send(err)
     } else if (err){
-      res.send(err)
+      res.status(400).json({
+        code: "imageFormatOnly",
+        message: "Only image formats allowed!",
+      });
     }
     res.status(200).json(req.file);
 })

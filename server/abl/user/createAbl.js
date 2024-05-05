@@ -4,8 +4,6 @@ const ajv = new Ajv();
 addFormats(ajv);
 
 const { Roles } = require("../../helpers/enumRoles.js");
-const validateDateTime = require("../../helpers/validate-date-time.js");
-ajv.addFormat("date-time", { validate: validateDateTime });
 
 const userDao = require("../../dao/user-dao.js");
 
@@ -16,7 +14,7 @@ const schema = {
     email: { type: "string", format: "email" },
     role: { enum: Object.values(Roles) }
   },
-  required: ["name", "email"],
+  required: ["name", "email", "role"],
   additionalProperties: false,
 };
 
@@ -36,7 +34,6 @@ async function CreateAbl(req, res) {
     }
     
     // kontrola zda uživatel s daným emailem již existuje
-    
     const userList = userDao.list();
     const emailExists = userList.some((u) => u.email === user.email);
     if (emailExists) {

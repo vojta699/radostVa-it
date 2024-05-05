@@ -10,7 +10,7 @@ const DeleteAbl = require("../abl/user/deleteAbl");
 router.get("/get/:id", GetAbl);
 router.get("/list", ListAbl);
 router.post("/create", CreateAbl);
-router.post("/update/:id", UpdateAbl);
-router.post("/delete/:id", DeleteAbl);
+router.post("/update/:loggeduserid/:edituserid", UpdateAbl);
+router.post("/delete/:loggeduserid/:edituserid", DeleteAbl);
 
 module.exports = router;
