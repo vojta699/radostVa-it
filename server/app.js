@@ -6,6 +6,7 @@ const port = 8000;
 const recipeController = require("./controller/recipe");
 const ratingController = require("./controller/rating");
 const userController = require("./controller/user");
+const enumController = require("./controller/enum");
 
 app.use(express.json()); // podpora pro application/json
 app.use(express.urlencoded({ extended: true })); // podpora pro application/x-www-form-urlencoded
@@ -19,6 +20,7 @@ app.get("/", (req, res) => {
 app.use("/recipe", recipeController);
 app.use("/rating", ratingController);
 app.use("/user", userController);
+app.use("/enum", enumController);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
