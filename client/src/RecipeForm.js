@@ -6,6 +6,8 @@ import Button from "react-bootstrap/Button";
 import CloseButton from "react-bootstrap/CloseButton";
 import Form from "react-bootstrap/Form";
 import Alert from "react-bootstrap/Alert";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 
 import Icon from "@mdi/react";
 import { mdiLoading } from "@mdi/js";
@@ -15,14 +17,103 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
     const [showAlert, setShowAlert] = useState(null);
     const isPending = state === "pending";
 
+    // Enumy ----------------------------------------------------------------------------------------------
     const [countryOptions, setCountryOptions] = useState([])
     const [selectedCountryOption, setSelectedCountryOption] = useState("")
-
     const [unitsOptions, setUnitsOptions] = useState([])
-    const [selectedUnitsOption, setSelectedUnitsOption] = useState("")
 
-    const [method, setMethod] = useState(recipe.method || [])
 
+
+    // Funkce přidání suroviny + smazání suroviny ----------------------------------------------------------
+    const [materialsValue, setMaterialsValue] = useState(recipe.materials || []);
+
+    const [newMaterialName, setNewMaterialName] = useState("");
+    const [newMaterialValue, setNewMaterialValue] = useState("");
+    const [newMaterialUnit, setNewMaterialUnit] = useState("");
+
+    const handleAddMaterials = () => {
+        if (newMaterialName.trim() !== "" && newMaterialValue.trim() !== "" && newMaterialUnit.trim() !== "") {
+            let newMaterial = {
+                name: newMaterialName,
+                value: newMaterialValue,
+                unit: newMaterialUnit,
+            }
+            setMaterialsValue(
+                [...materialsValue, newMaterial]
+            );
+            setNewMaterialName("");
+            setNewMaterialValue("");
+            setNewMaterialUnit("");
+        }
+    };
+    const handleDeleteMaterials = (name, value, unit) => {
+        setMaterialsValue(materialsValue.filter((material) => (material.name !== name && material.value !== value && material.unit !== unit)));
+    };
+
+    // Funkce přidání postupu + smazání postupu --------------------------------------------------------------
+    const [methods, setMethods] = useState(recipe.method || [])
+    const [newMethod, setNewMethod] = useState("")
+
+    const handleAddMethod = () => {
+        if (newMethod.trim() !== "") {
+            let newStep = {
+                steps: `${methods.length + 1}. ${newMethod}`,
+            }
+            setMethods(
+                [...methods, newStep]
+            );
+            setNewMethod("");
+        }
+    };
+    const handleDeleteMethod = (methodToDelete) => {
+        setMethods(methods.filter((method) => (method !== methodToDelete)));
+    };
+
+    // Funkce upload obrázek ---------------------------------------------------------------------------------
+    const [file, setFile] = useState(null);
+    const [preview, setPreview] = useState(null);
+    const [image, setImage] = useState(recipe.imgName || "66dcf3ba9b55edc3abda45e142b02f46.png");
+
+    
+
+    const handleFileChange = (event) => {
+        const selectedFile = event.target.files[0];
+        setFile(selectedFile);
+        setPreview(URL.createObjectURL(selectedFile));
+    };
+    const disHandleFileChange = () => {
+        const deleteUrl = `http://localhost:8000/recipe/img/delete/${image}`;
+        setImage("66dcf3ba9b55edc3abda45e142b02f46.png");
+    };
+    console.log(image);
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        if (!file) {
+            alert("Please select a file first!");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('image', file);
+        console.log(formData);
+        try {
+            const response = await fetch('http://localhost:8000/recipe/img/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                alert('File uploaded successfully!');
+            } else {
+                alert('File upload failed!');
+            }
+        } catch (error) {
+            console.error('Error uploading file:', error);
+            alert('Error uploading file!');
+        }
+    };
+
+    // Fetch Enumů --------------------------------------------------------------------------------------------
     useEffect(() => {
         fetch(`http://localhost:8000/enum/country`)
             .then(response => {
@@ -57,7 +148,10 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
     }, []);
 
     return (
-        <Modal show={true} onHide={() => setShowRecipeForm(false)}>
+
+        // Formulář ----------------------------------------------------------------------
+
+        <Modal size="lg" show={true} onHide={() => setShowRecipeForm(false)}>
             <Form
                 onSubmit={async (e) => {
                     e.prrecipeDefault();
@@ -79,9 +173,11 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
                     }
                 }}
             >
+                {/* Název Formuláře *******************************************************************/}
+
                 <Modal.Header>
-                    <Modal.Title>{`${recipe.id ? "Upravit" : "Vytvořit"
-                        } událost`}</Modal.Title>
+                    <Modal.Title>{`${recipe.id ? "Upravit" : "Vytvořit"} recept`}
+                    </Modal.Title>
                     <CloseButton onClick={() => setShowRecipeForm(false)} />
                 </Modal.Header>
                 <Modal.Body style={{ position: "relative" }}>
@@ -91,7 +187,7 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
                         dismissible
                         onClose={() => setShowAlert(null)}
                     >
-                        <Alert.Heading>Nepodařilo se vytvořit událost</Alert.Heading>
+                        <Alert.Heading>Nepodařilo se vytvořit recept</Alert.Heading>
                         <pre>{showAlert}</pre>
                     </Alert>
 
@@ -100,6 +196,8 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
                             <Icon path={mdiLoading} size={2} spin />
                         </div>
                     ) : null}
+
+                    {/* Název receptu ********************************************************************/}
 
                     <Form.Group className="mb-3" controlId="formBasicEmail">
                         <Form.Label>Název receptu</Form.Label>
@@ -110,6 +208,9 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
                             defaultValue={recipe.name}
                         />
                     </Form.Group>
+
+                    {/* Země původu ********************************************************************/}
+
                     <Form.Group className="mb-3" controlId="formBasicEmail">
                         <Form.Label>Země původu</Form.Label>
                         <Form.Select
@@ -118,7 +219,7 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
                                 setSelectedCountryOption(e.target.value)
                             }}
                         >
-                            <option value="">Select country</option>
+                            <option value="">Vyber zemi</option>
                             {countryOptions.map((country) => (
                                 <option key={country.id} value={country.id}>
                                     {country.name}
@@ -128,6 +229,9 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
 
                         </Form.Select>
                     </Form.Group>
+
+                    {/* Porce ********************************************************************/}
+
                     <Form.Group className="mb-3" controlId="formBasicEmail">
                         <Form.Label>Počet porcí</Form.Label>
                         <Form.Control
@@ -137,70 +241,196 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
                             defaultValue={recipe.portion}
                         />
                     </Form.Group>
-                    <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <Form.Label>Suroviny</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="name"
-                            required
-                            defaultValue={recipe.materials}
-                        />
-                    </Form.Group>
-                    <Button
-                        variant="secondary"
-                        onClick={() => setShowRecipeForm(false)}
-                        disabled={isPending}
+
+                    {/* Suroviny ********************************************************************/}
+
+                    <Form.Group
+                        as={Col}
+                        className="mb-3"
+                        controlId="formBasicEmail"
                     >
-                        Přidat surovinu
-                    </Button>
-                    <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <Form.Label>Postup</Form.Label>
-                        {method.map((step) => (
-                            <Form.Control
-                                type="text"
-                                name="name"
-                                required
-                                defaultValue={step.steps}
-                            />
+                        <Form.Label>Suroviny</Form.Label>
+                        <Row className="mb-3">
+                            <Col md={6}>
+                                <Form.Control
+                                    type="text"
+                                    name="name"
+                                    defaultValue=""
+                                    value={newMaterialName}
+                                    onChange={(e) => {
+                                        setNewMaterialName(e.target.value);
+                                    }}>
+                                </Form.Control>
+                            </Col>
+                            <Col md={3}>
+                                <Form.Control
+                                    type="text"
+                                    name="name"
+                                    defaultValue=""
+                                    value={newMaterialValue}
+                                    onChange={(e) => {
+                                        setNewMaterialValue(e.target.value);
+                                    }}>
+                                </Form.Control>
+                            </Col>
+                            <Col md={3}>
+                                <Form.Select
+                                    value={newMaterialUnit}
+                                    onChange={(e) => {
+                                        setNewMaterialUnit(e.target.value);
+                                    }}
+                                >
+                                    <option value="">
+                                        Vyber jednotku
+                                    </option>
+                                    {unitsOptions.map((option) => (
+                                        <option key={option.id} value={option.name}>
+                                            {option.name}
+                                        </option>
+                                    ))}
+
+                                </Form.Select>
+                            </Col>
+                        </Row>
+                    </Form.Group>
+                    <Form.Group
+                        as={Col}
+                        className="mb-3"
+                        controlId="formBasicEmail"
+                    >
+                        <Button variant="primary" onClick={handleAddMaterials}>
+                            Přidat surovinu
+                        </Button>
+                    </Form.Group>
+                    {materialsValue
+                        .map((material) => (
+                            <Row className="mb-3">
+                                <Col md={5}>
+                                    <p
+                                        key={material.id}
+                                        style={{
+                                            backgroundColor: "pink",
+                                            textAlign: "center",
+                                        }}
+                                    >
+                                        <b>
+                                            {material.name}
+                                        </b>
+                                    </p>
+                                </Col>
+                                <Col md={5}>
+                                    <p
+                                        key={material.id}
+                                        style={{
+                                            backgroundColor: "pink",
+                                            textAlign: "center",
+                                        }}
+                                    >
+                                        <b>
+                                            {material.value}{" "}{material.unit}
+                                        </b>
+                                    </p>
+                                </Col>
+                                <Col md={2}>
+                                    <Button
+                                        variant="danger"
+                                        onClick={() =>
+                                            handleDeleteMaterials(material.name, material.value, material.unit)
+                                        }
+                                        style={{ display: "flex" }}
+                                    >
+                                        Smazat
+                                    </Button>
+                                </Col>
+                            </Row>
                         ))}
 
+                    {/* Postup ********************************************************************/}
 
-                    </Form.Group>
-                    <Button
-                        variant="secondary"
-                        onClick={() => setShowRecipeForm(false)}
-                        disabled={isPending}
+                    <Form.Group
+                        as={Col}
+                        className="mb-3"
+                        controlId="formBasicEmail"
                     >
-                        Přidat řádek
-                    </Button>
+                        <Form.Label>Postup</Form.Label>
+                        <Row className="mb-3">
+                            <Col md={12}>
+                                <Form.Control
+                                    type="text"
+                                    name="name"
+                                    defaultValue=""
+                                    value={newMethod}
+                                    onChange={(e) => {
+                                        setNewMethod(e.target.value);
+                                    }}>
+                                </Form.Control>
+                            </Col>
+                        </Row>
+                    </Form.Group>
+                    <Form.Group
+                        as={Col}
+                        className="mb-3"
+                        controlId="formBasicEmail"
+                    >
+                        <Button variant="primary" onClick={handleAddMethod}>
+                            Přidat postup
+                        </Button>
+                    </Form.Group>
+                    {methods
+                        .map((method) => (
+                            <Row className="mb-3">
+                                <Col md={10}>
+                                    <p
+                                        key={method.id}
+                                        style={{
+                                            backgroundColor: "pink",
+                                            textAlign: "center",
+                                        }}
+                                    >
+                                        <b>
+                                            {method.steps}
+                                        </b>
+                                    </p>
+                                </Col>
+                                <Col md={2}>
+                                    <Button
+                                        variant="danger"
+                                        onClick={() =>
+                                            handleDeleteMethod(method)
+                                        }
+                                        style={{ display: "flex" }}
+                                    >
+                                        Smazat
+                                    </Button>
+                                </Col>
+                            </Row>
+                        ))}
+
+                    {/* Obrázek ********************************************************************/}
+
                     <Form.Group className="mb-3" controlId="formBasicEmail">
                         <Form.Label>Obrázek</Form.Label>
-                        {recipe.imgName === "66dcf3ba9b55edc3abda45e142b02f46.png" ?
+                    </Form.Group>
+                    <Form onSubmit={handleSubmit}>
+
+                        {(image === "66dcf3ba9b55edc3abda45e142b02f46.png") ?
                             <>
+                                <Form.Control type="file" accept="image/*" onChange={handleFileChange} />
+                                <Button variant="primary" disabled={isPending}>Upload</Button>
+                                {preview === null ?
+                                    <>
+                                    </> : <>
+                                        {preview && <img src={preview} alt="Preview" style={{ width: '170px', height: '150px', marginTop: '10px' }} />}
+                                    </>}
                             </> : <>
                                 <p>
-                                    {recipe.imgName}
+                                    {image}
                                 </p>
+                                <Button variant="danger" onClick={() => disHandleFileChange()}>Smazat</Button>
                             </>}
-                    </Form.Group>
-                    {(recipe.imgName === "66dcf3ba9b55edc3abda45e142b02f46.png" || recipe.imgName === undefined) ?
-                        <>
-                            <Button
-                                variant="secondary"
-                                onClick={() => setShowRecipeForm(false)}
-                                disabled={isPending}
-                            >
-                                Přidat obrázek
-                            </Button>
-                        </> : <>
-                            <Button
-                                variant="danger"
-                                onClick={() => setShowRecipeForm(false)}
-                                disabled={isPending}
-                            >
-                                Smazat obrázek
-                            </Button>
-                        </>}
+                    </Form>
+
+                    {/* ´-------------------------------------------------------------------- */}
                 </Modal.Body>
                 <Modal.Footer>
                     <Button
@@ -208,7 +438,7 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
                         onClick={() => setShowRecipeForm(false)}
                         disabled={isPending}
                     >
-                        Smazat
+                        Zavřít
                     </Button>
                     <Button type="submit" variant="primary" disabled={isPending}>
                         {recipe.id ? "Upravit" : "Vytvořit"}
@@ -218,6 +448,8 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
         </Modal>
     );
 }
+
+// Stylování
 
 function pendingStyle() {
     return {

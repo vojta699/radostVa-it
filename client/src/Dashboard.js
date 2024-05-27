@@ -26,18 +26,20 @@ function RecipeList() {
           Nové události
         </Button> */}
       </div>
-      {!!showRecipeForm ? (
-        <RecipeForm recipe={showRecipeForm} setShowRecipeForm={setShowRecipeForm} />
-      ) : null}
-      {recipeList.map((recipe) => {
-        return (
-          <RecipeCard
-            key={recipe.id}
-            recipe={recipe}
-            setShowRecipeForm={setShowRecipeForm}
-          />
-        );
-      })}
+      <div style={{display: "flex",
+    flexDirection: "row"}}>{!!showRecipeForm ? (
+      <RecipeForm recipe={showRecipeForm} setShowRecipeForm={setShowRecipeForm} />
+    ) : null}
+    {recipeList.map((recipe) => {
+      return (
+        <RecipeCard
+          key={recipe.id}
+          recipe={recipe}
+          setShowRecipeForm={setShowRecipeForm}
+        />
+      );
+    })}</div>
+      
     </Container>
   );
 }

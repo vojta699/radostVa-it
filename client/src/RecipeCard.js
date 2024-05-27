@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import RecipeDetail from "./RecipeDetail";
 
 import Icon from "@mdi/react";
-import { mdiEyeOutline, mdiPencil } from "@mdi/js";
+import { mdiDelete, mdiEyeOutline, mdiPencil } from "@mdi/js";
 
 function RecipeCard({ recipe, setShowRecipeForm }) {
   const navigate = useNavigate();
@@ -14,21 +14,20 @@ function RecipeCard({ recipe, setShowRecipeForm }) {
       <RecipeDetail recipe={recipe} />
       <div
         style={{
-          display: "grid",
-          gap: "2px",
-          justifyContent: "center",
-          alignItems: "center",
+          display: "flex",
+          justifyContent: "right",
         }}
       >
-        <Button
-          onClick={() => navigate("/recipeDetail?id=" + recipe.id)}
-          size={"sm"}
-        >
-          <Icon path={mdiEyeOutline} size={0.7} />
-        </Button>
-        <Button onClick={() => setShowRecipeForm(recipe)} size={"sm"}>
-          <Icon path={mdiPencil} size={0.7} />
-        </Button>
+        <div style={buttonsDivStyle()}>
+          <Button style={buttonsStyle()} onClick={() => navigate("/recipeDetail?id=" + recipe.id)} size={"sm"}>
+            <Icon path={mdiEyeOutline} size={0.7} />
+          </Button>
+          <Button style={buttonsStyle()} onClick={() => setShowRecipeForm(recipe)} size={"sm"}>
+            <Icon path={mdiPencil} size={0.7} />
+          </Button>
+          <Button style={buttonsStyle()} onClick={() => ""} size={"sm"}>
+            <Icon path={mdiDelete} size={0.7} />
+          </Button></div>
       </div>
     </div>
   );
@@ -36,13 +35,27 @@ function RecipeCard({ recipe, setShowRecipeForm }) {
 
 function componentStyle() {
   return {
-    margin: "12px auto",
+    maxWidth: "400px",
+    margin: "12px",
     padding: "8px",
-    display: "grid",
-    gridTemplateColumns: "max-content auto 32px",
-    columnGap: "8px",
-    maxWidth: "640px",
+    display: "flex",
+    flexDirection: "column",
   };
+}
+
+function buttonsDivStyle() {
+  return {
+    margin: "12px",
+    padding: "8px",
+    display: "flex",
+    flexdirection: "column"
+  }
+}
+
+function buttonsStyle() {
+  return {
+    marginRight: "5px",
+  }
 }
 
 export default RecipeCard;

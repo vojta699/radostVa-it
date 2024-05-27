@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
+import { ImageContext } from "./ImageContext.js";
 
 function RecipeDetail({ recipe }) {
-
-  const [image, setImage] = useState()
+  
+  const [base64, setBase64] = useState()
 
 
   useEffect(() => {
@@ -11,28 +12,25 @@ function RecipeDetail({ recipe }) {
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-        return response.json();
+        return response.text();
       })
       .then(data => {
-        setImage(data);
+        setBase64(data);
       })
       .catch(error => console.log(error));
-  }, []);
-
-
-
-  console.log(image);
+  }, [recipe.imgName]);
 
   return (
     <div style={{ display: "grid", rowGap: "4px" }}>
-      {/* <div>{image}</div> */}
+      <div>{base64 ? (
+        <img style={{ width: "200px", height: "140px" }} src={`data:image/jpeg;base64,${base64}`} alt="" />
+      ) : (
+        <p>Loading...</p>
+      )}</div>
       <div style={{ fontSize: "22px" }}>{recipe.name}</div>
+
     </div>
   );
-}
-
-function decisionColumnStyle() {
-  return { display: "flex", justifyContent: "right", padding: "0" };
 }
 
 export default RecipeDetail;
