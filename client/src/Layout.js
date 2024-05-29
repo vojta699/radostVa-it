@@ -11,7 +11,7 @@ const Layout = () => {
       <div style={bodyStyle()}>
         <Outlet />
       </div>
-      <div className={"card-footer text-light"} style={footerStyle()}>
+      <div className={"card-footer text-dark"} style={footerStyle()}>
         © Vojtěch Vihan
       </div>
     </>
@@ -29,7 +29,7 @@ function bodyStyle() {
 }
 
 function footerStyle() {
-  return { padding: "8px", textAlign: "center", backgroundColor: "pink" };
+  return { padding: "8px", textAlign: "center", backgroundColor: "pink", fontSize:"15px" };
 }
 
 export default Layout;

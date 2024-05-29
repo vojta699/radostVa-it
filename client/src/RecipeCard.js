@@ -1,16 +1,32 @@
 import Button from "react-bootstrap/esm/Button.js";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { RecipeListContext } from "./RecipeListContext.js";
+import { UserContext } from "./UserContext.js";
 
 import RecipeDetail from "./RecipeDetail";
 
 import Icon from "@mdi/react";
 import { mdiDelete, mdiEyeOutline, mdiPencil } from "@mdi/js";
 
+
 function RecipeCard({ recipe, setShowRecipeForm }) {
+  const { loggedInUser } = useContext(UserContext);
+  const { handlerMap } = useContext(RecipeListContext);
+
   const navigate = useNavigate();
+
+  async function deleteRecipe() {
+    try {
+      await handlerMap.handleDelete(recipe.id, loggedInUser.id);
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
   return (
     <div className="card border-0 shadow rounded" style={componentStyle()}>
+
       <RecipeDetail recipe={recipe} />
       <div
         style={{
@@ -22,20 +38,30 @@ function RecipeCard({ recipe, setShowRecipeForm }) {
           <Button style={buttonsStyle()} onClick={() => navigate("/recipeDetail?id=" + recipe.id)} size={"sm"}>
             <Icon path={mdiEyeOutline} size={0.7} />
           </Button>
-          <Button style={buttonsStyle()} onClick={() => setShowRecipeForm(recipe)} size={"sm"}>
-            <Icon path={mdiPencil} size={0.7} />
-          </Button>
-          <Button style={buttonsStyle()} onClick={() => ""} size={"sm"}>
-            <Icon path={mdiDelete} size={0.7} />
-          </Button></div>
+
+          {loggedInUser && (loggedInUser.id === recipe.user_ID || loggedInUser.role === "admin") ? (
+            <div>
+              <Button style={buttonsStyle()} onClick={() => setShowRecipeForm(recipe)} size={"sm"}>
+                <Icon path={mdiPencil} size={0.7} />
+              </Button>
+              <Button style={buttonsStyle()} onClick={() => deleteRecipe()} size={"sm"}>
+                <Icon path={mdiDelete} size={0.7} />
+              </Button>
+            </div>
+          ) : null}
+        </div>
       </div>
+
+
+
+
     </div>
   );
 }
 
 function componentStyle() {
   return {
-    maxWidth: "400px",
+    maxWidth: "300px",
     margin: "12px",
     padding: "8px",
     display: "flex",

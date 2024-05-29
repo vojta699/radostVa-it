@@ -1,5 +1,7 @@
 import { useContext, useState, useEffect } from "react";
+import { UserContext } from "./UserContext.js";
 import { RecipeListContext } from "./RecipeListContext.js";
+
 
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
@@ -14,18 +16,20 @@ import { mdiLoading } from "@mdi/js";
 
 function RecipeForm({ setShowRecipeForm, recipe }) {
     const { state, handlerMap } = useContext(RecipeListContext);
+    const { loggedInUser } = useContext(UserContext);
     const [showAlert, setShowAlert] = useState(null);
     const isPending = state === "pending";
+console.log(loggedInUser);
 
     // Enumy ----------------------------------------------------------------------------------------------
     const [countryOptions, setCountryOptions] = useState([])
-    const [selectedCountryOption, setSelectedCountryOption] = useState("")
+    const [selectedCountryOption, setSelectedCountryOption] = useState(recipe.countryOfOrigin || "")
     const [unitsOptions, setUnitsOptions] = useState([])
 
 
 
     // Funkce přidání suroviny + smazání suroviny ----------------------------------------------------------
-    const [materialsValue, setMaterialsValue] = useState(recipe.materials || []);
+    const [materials, setMaterials] = useState(recipe.materials || []);
 
     const [newMaterialName, setNewMaterialName] = useState("");
     const [newMaterialValue, setNewMaterialValue] = useState("");
@@ -35,11 +39,11 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
         if (newMaterialName.trim() !== "" && newMaterialValue.trim() !== "" && newMaterialUnit.trim() !== "") {
             let newMaterial = {
                 name: newMaterialName,
-                value: newMaterialValue,
+                value: parseInt(newMaterialValue),
                 unit: newMaterialUnit,
             }
-            setMaterialsValue(
-                [...materialsValue, newMaterial]
+            setMaterials(
+                [...materials, newMaterial]
             );
             setNewMaterialName("");
             setNewMaterialValue("");
@@ -47,32 +51,33 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
         }
     };
     const handleDeleteMaterials = (name, value, unit) => {
-        setMaterialsValue(materialsValue.filter((material) => (material.name !== name && material.value !== value && material.unit !== unit)));
+        setMaterials(materials.filter((material) => (material.name !== name && material.value !== value && material.unit !== unit)));
     };
 
     // Funkce přidání postupu + smazání postupu --------------------------------------------------------------
-    const [methods, setMethods] = useState(recipe.method || [])
+    const [method, setMethod] = useState(recipe.method || [])
     const [newMethod, setNewMethod] = useState("")
 
     const handleAddMethod = () => {
         if (newMethod.trim() !== "") {
             let newStep = {
-                steps: `${methods.length + 1}. ${newMethod}`,
+                steps: `${method.length + 1}. ${newMethod}`,
             }
-            setMethods(
-                [...methods, newStep]
+            setMethod(
+                [...method, newStep]
             );
             setNewMethod("");
         }
     };
     const handleDeleteMethod = (methodToDelete) => {
-        setMethods(methods.filter((method) => (method !== methodToDelete)));
+        setMethod(method.filter((method) => (method !== methodToDelete)));
     };
-
+    
     // Funkce upload obrázek ---------------------------------------------------------------------------------
     const [file, setFile] = useState(null);
     const [preview, setPreview] = useState(null);
     const [image, setImage] = useState(recipe.imgName || "66dcf3ba9b55edc3abda45e142b02f46.png");
+    const [imageToDelete, setImageToDelete] = useState(null)
 
     
 
@@ -81,11 +86,22 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
         setFile(selectedFile);
         setPreview(URL.createObjectURL(selectedFile));
     };
-    const disHandleFileChange = () => {
-        const deleteUrl = `http://localhost:8000/recipe/img/delete/${image}`;
+    const deleteFile = () => {
+        setImageToDelete(image)
         setImage("66dcf3ba9b55edc3abda45e142b02f46.png");
     };
+
+    const disHandleFileChange = (event) => {
+        setFile(null)
+        setPreview(null)
+        document.getElementById('fileInput').value = ''
+    };
+
+    console.log(file);
     console.log(image);
+    console.log(imageToDelete);
+
+    
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (!file) {
@@ -154,14 +170,17 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
         <Modal size="lg" show={true} onHide={() => setShowRecipeForm(false)}>
             <Form
                 onSubmit={async (e) => {
-                    e.prrecipeDefault();
+                    e.preventDefault();
                     e.stopPropagation();
-                    var formData = Object.fromEntries(new FormData(e.target));
-                    formData.date = new Date(formData.date).toISOString();
+                    var formData = Object.fromEntries(new FormData(e.target))
+                    Object.assign(formData, { method, materials, "user_ID": loggedInUser.id })
+                    formData.portion = parseInt(formData.portion)
+                    
                     try {
+                        
                         if (recipe.id) {
-                            formData.id = recipe.id;
-                            await handlerMap.handleUpdate(formData);
+                            formData.user_ID = undefined
+                            await handlerMap.handleUpdate(formData, recipe.id, loggedInUser.id);
                         } else {
                             await handlerMap.handleCreate(formData);
                         }
@@ -171,6 +190,7 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
                         console.error(e);
                         setShowAlert(e.message);
                     }
+                    console.log(formData);
                 }}
             >
                 {/* Název Formuláře *******************************************************************/}
@@ -214,6 +234,7 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
                     <Form.Group className="mb-3" controlId="formBasicEmail">
                         <Form.Label>Země původu</Form.Label>
                         <Form.Select
+                            name="countryOfOrigin"
                             value={selectedCountryOption}
                             onChange={(e) => {
                                 setSelectedCountryOption(e.target.value)
@@ -221,7 +242,7 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
                         >
                             <option value="">Vyber zemi</option>
                             {countryOptions.map((country) => (
-                                <option key={country.id} value={country.id}>
+                                <option key={country.id} value={country.name}>
                                     {country.name}
                                 </option>
                             ))}
@@ -235,10 +256,13 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
                     <Form.Group className="mb-3" controlId="formBasicEmail">
                         <Form.Label>Počet porcí</Form.Label>
                         <Form.Control
-                            type="text"
-                            name="name"
+                            type="number"
+                            name="portion"
+                            placeholder="1-10"
                             required
                             defaultValue={recipe.portion}
+                            min="1"
+                            max="10"
                         />
                     </Form.Group>
 
@@ -254,7 +278,7 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
                             <Col md={6}>
                                 <Form.Control
                                     type="text"
-                                    name="name"
+                                    placeholder="Název suroviny"
                                     defaultValue=""
                                     value={newMaterialName}
                                     onChange={(e) => {
@@ -264,8 +288,9 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
                             </Col>
                             <Col md={3}>
                                 <Form.Control
-                                    type="text"
-                                    name="name"
+                                    type="number"
+                                    min="0"
+                                    placeholder="Množství"
                                     defaultValue=""
                                     value={newMaterialValue}
                                     onChange={(e) => {
@@ -302,7 +327,7 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
                             Přidat surovinu
                         </Button>
                     </Form.Group>
-                    {materialsValue
+                    {materials
                         .map((material) => (
                             <Row className="mb-3">
                                 <Col md={5}>
@@ -357,8 +382,9 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
                             <Col md={12}>
                                 <Form.Control
                                     type="text"
-                                    name="name"
+                                    maxLength={300}
                                     defaultValue=""
+                                    placeholder="Zadejte postup receptu, poté ho přidejte. Max 300 znaků."
                                     value={newMethod}
                                     onChange={(e) => {
                                         setNewMethod(e.target.value);
@@ -376,7 +402,7 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
                             Přidat postup
                         </Button>
                     </Form.Group>
-                    {methods
+                    {method
                         .map((method) => (
                             <Row className="mb-3">
                                 <Col md={10}>
@@ -415,18 +441,19 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
 
                         {(image === "66dcf3ba9b55edc3abda45e142b02f46.png") ?
                             <>
-                                <Form.Control type="file" accept="image/*" onChange={handleFileChange} />
-                                <Button variant="primary" disabled={isPending}>Upload</Button>
+                                <Form.Control type="file" accept="image/*" onChange={handleFileChange} id="fileInput" />
+                                
                                 {preview === null ?
                                     <>
                                     </> : <>
                                         {preview && <img src={preview} alt="Preview" style={{ width: '170px', height: '150px', marginTop: '10px' }} />}
+                                        <Button variant="danger" onClick={() => disHandleFileChange()}>Zrušit</Button>
                                     </>}
                             </> : <>
                                 <p>
                                     {image}
                                 </p>
-                                <Button variant="danger" onClick={() => disHandleFileChange()}>Smazat</Button>
+                                <Button variant="danger" onClick={() => deleteFile()}>Smazat</Button>
                             </>}
                     </Form>
 
@@ -440,7 +467,11 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
                     >
                         Zavřít
                     </Button>
-                    <Button type="submit" variant="primary" disabled={isPending}>
+                    <Button 
+                        type="submit" 
+                        variant="primary" 
+                        disabled={isPending}
+                    >
                         {recipe.id ? "Upravit" : "Vytvořit"}
                     </Button>
                 </Modal.Footer>

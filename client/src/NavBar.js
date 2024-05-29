@@ -47,7 +47,7 @@ function brandStyle() {
     display: "flex",
     alignItems: "center",
     gap: "8px",
-    color: "black",
+    color: "pink",
   };
 }
 

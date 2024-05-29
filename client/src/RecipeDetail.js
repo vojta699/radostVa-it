@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { ImageContext } from "./ImageContext.js";
+// import { ImageContext } from "./ImageContext.js";
 
 function RecipeDetail({ recipe }) {
   
+  // const { base64 } = useContext(ImageContext);
   const [base64, setBase64] = useState()
 
 
@@ -22,8 +23,8 @@ function RecipeDetail({ recipe }) {
 
   return (
     <div style={{ display: "grid", rowGap: "4px" }}>
-      <div>{base64 ? (
-        <img style={{ width: "200px", height: "140px" }} src={`data:image/jpeg;base64,${base64}`} alt="" />
+      <div style={{ display: "flex", justifyContent: "center" }}>{base64 ? (
+        <img style={{ maxWidth: "280px", height: "180px" }} src={`data:image/jpeg;base64,${base64}`} alt="" />
       ) : (
         <p>Loading...</p>
       )}</div>

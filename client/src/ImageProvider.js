@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { ImageContext } from "./ImageContext.js";
+import { RecipeListContext } from "./RecipeListContext.js";
 
 function ImageProvider({ children }) {
   const [imageLoadObject, setImageLoadObject] = useState({
@@ -12,6 +13,7 @@ function ImageProvider({ children }) {
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [base64, setBase64] = useState(null);
+  const { state, handlerMap } = useContext(RecipeListContext);
 
   useEffect(() => {
     if (image) {

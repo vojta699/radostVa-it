@@ -41,7 +41,7 @@ function RecipeListProvider({ children }) {
       body: JSON.stringify(dtoIn),
     });
     const responseJson = await response.json();
-
+    console.log(responseJson);
     if (response.status < 400) {
       setRecipeLoadObject((current) => {
         current.data.push(responseJson);
@@ -56,9 +56,9 @@ function RecipeListProvider({ children }) {
     }
   }
 
-  async function handleUpdate(dtoIn) {
+  async function handleUpdate(dtoIn, recipeID, userID) {
     setRecipeLoadObject((current) => ({ ...current, state: "pending" }));
-    const response = await fetch(`http://localhost:8000/recipe/update`, {
+    const response = await fetch(`http://localhost:8000/recipe/update/${recipeID}/${userID}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(dtoIn),
@@ -84,12 +84,12 @@ function RecipeListProvider({ children }) {
     }
   }
 
-  async function handleDelete(dtoIn) {
+  async function handleDelete(recipeID, userID) {
     setRecipeLoadObject((current) => ({ ...current, state: "pending" }));
-    const response = await fetch(`http://localhost:8000/recipe/delete`, {
+    const response = await fetch(`http://localhost:8000/recipe/delete/${recipeID}/${userID}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(dtoIn),
+      body: JSON.stringify(),
     });
     const responseJson = await response.json();
 
