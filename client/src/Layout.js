@@ -23,13 +23,13 @@ function bodyStyle() {
     overflow: "auto",
     padding: "16px",
     flex: "1",
-    borderTop: "grey 4px solid",
-    borderBottom: "grey 4px solid",
+    borderTop: "#DEE2E6 4px solid",
+    borderBottom: "#DEE2E6 4px solid",
   };
 }
 
 function footerStyle() {
-  return { padding: "8px", textAlign: "center", backgroundColor: "pink", fontSize:"15px" };
+  return { padding: "8px", textAlign: "center", fontSize:"15px" };
 }
 
 export default Layout;

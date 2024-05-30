@@ -10,20 +10,19 @@ import NavDropdown from "react-bootstrap/NavDropdown";
 
 import Icon from "@mdi/react";
 import { mdiChefHat, mdiLogout } from "@mdi/js";
-import Button from "react-bootstrap/esm/Button";
 
 function NavBar() {
   const { userList, loggedInUser, handlerMap } = useContext(UserContext);
   const navigate = useNavigate();
 
   return (
-    <Navbar expand="lg" style={componentStyle()}>
+    <Navbar expand="lg">
       <Container>
         <Navbar.Brand>
-          <Button style={brandStyle()} onClick={() => navigate("/")}>
-            <Icon path={mdiChefHat} size={1} color={"pink"} />
+          <button style={{ fontSize: "25px", border: "none", backgroundColor: "white" }} onClick={() => navigate("/")}>
+          <Icon path={mdiChefHat} size={1} color={"pink"} />
             RadostVařit
-          </Button>
+          </button>
         </Navbar.Brand>
         <Nav>
           <NavDropdown
@@ -36,19 +35,6 @@ function NavBar() {
       </Container>
     </Navbar>
   );
-}
-
-function componentStyle() {
-  return { backgroundColor: "pink" };
-}
-
-function brandStyle() {
-  return {
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    color: "pink",
-  };
 }
 
 function getUserMenuList({ userList, loggedInUser, handlerMap }) {

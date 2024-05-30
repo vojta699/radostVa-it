@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 // import { ImageContext } from "./ImageContext.js";
+import RatingComponent from "./RatingComponent"
 
 function RecipeShow({ recipe }) {
 
@@ -30,7 +31,7 @@ function RecipeShow({ recipe }) {
         <Col md={6}>
             <div style={{ display: "grid", rowGap: "4px" }}>
               <div>{base64 ? (
-                <img style={{ maxWidth: "60vh", maxHeight: "32vh" }} src={`data:image/jpeg;base64,${base64}`} alt="" />
+                <img style={{ maxWidth: "50vh", maxHeight: "35vh" }} src={`data:image/jpeg;base64,${base64}`} alt="" />
               ) : (
                 <p>Loading...</p>
               )}</div>
@@ -39,6 +40,7 @@ function RecipeShow({ recipe }) {
           <Col md={6}>
             <div style={{ fontSize: "22px" }}>{recipe.name}</div>
             <div style={{ fontSize: "12px" }}>{recipe.countryOfOrigin}</div>
+            <RatingComponent recipeId={recipe.id} />
             <br />
             <div style={{ fontSize: "15px" }}>Čas: </div>
             <div style={{ fontSize: "15px" }}>Množství: {recipe.portion} porce</div>

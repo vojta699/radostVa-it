@@ -5,10 +5,10 @@ import { RecipeListContext } from "./RecipeListContext.js";
 import { UserContext } from "./UserContext.js";
 
 import RecipeDetail from "./RecipeDetail";
+import RatingComponent from "./RatingComponent"
 
 import Icon from "@mdi/react";
 import { mdiDelete, mdiEyeOutline, mdiPencil } from "@mdi/js";
-
 
 function RecipeCard({ recipe, setShowRecipeForm }) {
   const { loggedInUser } = useContext(UserContext);
@@ -16,6 +16,8 @@ function RecipeCard({ recipe, setShowRecipeForm }) {
 
   const navigate = useNavigate();
 
+
+  // smazat recept
   async function deleteRecipe() {
     try {
       await handlerMap.handleDelete(recipe.id, loggedInUser.id);
@@ -28,6 +30,8 @@ function RecipeCard({ recipe, setShowRecipeForm }) {
     <div className="card border-0 shadow rounded" style={componentStyle()}>
 
       <RecipeDetail recipe={recipe} />
+      <RatingComponent recipeId={recipe.id} />
+      {recipe.countryOfOrigin}
       <div
         style={{
           display: "flex",
@@ -38,7 +42,6 @@ function RecipeCard({ recipe, setShowRecipeForm }) {
           <Button style={buttonsStyle()} onClick={() => navigate("/recipeDetail?id=" + recipe.id)} size={"sm"}>
             <Icon path={mdiEyeOutline} size={0.7} />
           </Button>
-
           {loggedInUser && (loggedInUser.id === recipe.user_ID || loggedInUser.role === "admin") ? (
             <div>
               <Button style={buttonsStyle()} onClick={() => setShowRecipeForm(recipe)} size={"sm"}>

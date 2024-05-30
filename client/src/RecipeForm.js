@@ -19,7 +19,6 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
     const { loggedInUser } = useContext(UserContext);
     const [showAlert, setShowAlert] = useState(null);
     const isPending = state === "pending";
-console.log(loggedInUser);
 
     // Enumy ----------------------------------------------------------------------------------------------
     const [countryOptions, setCountryOptions] = useState([])
@@ -72,14 +71,14 @@ console.log(loggedInUser);
     const handleDeleteMethod = (methodToDelete) => {
         setMethod(method.filter((method) => (method !== methodToDelete)));
     };
-    
+
     // Funkce upload obrázek ---------------------------------------------------------------------------------
     const [file, setFile] = useState(null);
     const [preview, setPreview] = useState(null);
     const [image, setImage] = useState(recipe.imgName || "66dcf3ba9b55edc3abda45e142b02f46.png");
     const [imageToDelete, setImageToDelete] = useState(null)
 
-    
+
 
     const handleFileChange = (event) => {
         const selectedFile = event.target.files[0];
@@ -101,7 +100,7 @@ console.log(loggedInUser);
     console.log(image);
     console.log(imageToDelete);
 
-    
+    // Obrázky
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (!file) {
@@ -175,9 +174,9 @@ console.log(loggedInUser);
                     var formData = Object.fromEntries(new FormData(e.target))
                     Object.assign(formData, { method, materials, "user_ID": loggedInUser.id })
                     formData.portion = parseInt(formData.portion)
-                    
+
                     try {
-                        
+
                         if (recipe.id) {
                             formData.user_ID = undefined
                             await handlerMap.handleUpdate(formData, recipe.id, loggedInUser.id);
@@ -279,7 +278,6 @@ console.log(loggedInUser);
                                 <Form.Control
                                     type="text"
                                     placeholder="Název suroviny"
-                                    defaultValue=""
                                     value={newMaterialName}
                                     onChange={(e) => {
                                         setNewMaterialName(e.target.value);
@@ -291,7 +289,6 @@ console.log(loggedInUser);
                                     type="number"
                                     min="0"
                                     placeholder="Množství"
-                                    defaultValue=""
                                     value={newMaterialValue}
                                     onChange={(e) => {
                                         setNewMaterialValue(e.target.value);
@@ -382,8 +379,8 @@ console.log(loggedInUser);
                             <Col md={12}>
                                 <Form.Control
                                     type="text"
+                                    as="textarea"
                                     maxLength={300}
-                                    defaultValue=""
                                     placeholder="Zadejte postup receptu, poté ho přidejte. Max 300 znaků."
                                     value={newMethod}
                                     onChange={(e) => {
@@ -437,12 +434,16 @@ console.log(loggedInUser);
                     <Form.Group className="mb-3" controlId="formBasicEmail">
                         <Form.Label>Obrázek</Form.Label>
                     </Form.Group>
-                    <Form onSubmit={handleSubmit}>
+                    <Form.Group
+                        as={Col}
+                        className="mb-3"
+                        
+                    >
 
                         {(image === "66dcf3ba9b55edc3abda45e142b02f46.png") ?
                             <>
                                 <Form.Control type="file" accept="image/*" onChange={handleFileChange} id="fileInput" />
-                                
+
                                 {preview === null ?
                                     <>
                                     </> : <>
@@ -455,7 +456,7 @@ console.log(loggedInUser);
                                 </p>
                                 <Button variant="danger" onClick={() => deleteFile()}>Smazat</Button>
                             </>}
-                    </Form>
+                    </Form.Group>
 
                     {/* ´-------------------------------------------------------------------- */}
                 </Modal.Body>
@@ -467,9 +468,9 @@ console.log(loggedInUser);
                     >
                         Zavřít
                     </Button>
-                    <Button 
-                        type="submit" 
-                        variant="primary" 
+                    <Button
+                        type="submit"
+                        variant="primary"
                         disabled={isPending}
                     >
                         {recipe.id ? "Upravit" : "Vytvořit"}

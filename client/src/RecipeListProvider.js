@@ -5,7 +5,7 @@ function RecipeListProvider({ children }) {
   const [recipeLoadObject, setRecipeLoadObject] = useState({
     state: "ready",
     error: null,
-    data: null,
+    data: [],
   });
 
   useEffect(() => {
@@ -14,108 +14,114 @@ function RecipeListProvider({ children }) {
 
   async function handleLoad() {
     setRecipeLoadObject((current) => ({ ...current, state: "pending" }));
-    const response = await fetch(`http://localhost:8000/recipe/list`, {
-      method: "GET",
-    });
-    const responseJson = await response.json();
-    if (response.status < 400) {
-      setRecipeLoadObject({ state: "ready", data: responseJson });
-      return responseJson;
-    } else {
+    try {
+      const response = await fetch(`http://localhost:8000/recipe/list`, {
+        method: "GET",
+      });
+      const responseJson = await response.json();
+      if (response.status < 400) {
+        setRecipeLoadObject({ state: "ready", data: responseJson });
+      } else {
+        throw new Error(responseJson.error);
+      }
+    } catch (error) {
       setRecipeLoadObject((current) => ({
         state: "error",
         data: current.data,
-        error: responseJson.error,
+        error: error.message,
       }));
-      throw new Error(JSON.stringify(responseJson, null, 2));
+      console.error('Error fetching recipes:', error);
     }
   }
 
   async function handleCreate(dtoIn) {
     setRecipeLoadObject((current) => ({ ...current, state: "pending" }));
-    const response = await fetch(`http://localhost:8000/recipe/create`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(dtoIn),
-    });
-    const responseJson = await response.json();
-    console.log(responseJson);
-    if (response.status < 400) {
-      setRecipeLoadObject((current) => {
-        current.data.push(responseJson);
-        return { state: "ready", data: current.data };
+    try {
+      const response = await fetch(`http://localhost:8000/recipe/create`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dtoIn),
       });
-      return responseJson;
-    } else {
-      setRecipeLoadObject((current) => {
-        return { state: "error", data: current.data, error: responseJson };
-      });
-      throw new Error(JSON.stringify(responseJson, null, 2));
+      const responseJson = await response.json();
+      if (response.status < 400) {
+        setRecipeLoadObject((current) => ({
+          state: "ready",
+          data: [...current.data, responseJson],
+        }));
+      } else {
+        throw new Error(responseJson.error);
+      }
+    } catch (error) {
+      setRecipeLoadObject((current) => ({
+        state: "error",
+        data: current.data,
+        error: error.message,
+      }));
+      console.error('Error creating recipe:', error);
     }
   }
 
   async function handleUpdate(dtoIn, recipeID, userID) {
     setRecipeLoadObject((current) => ({ ...current, state: "pending" }));
-    const response = await fetch(`http://localhost:8000/recipe/update/${recipeID}/${userID}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(dtoIn),
-    });
-    const responseJson = await response.json();
-
-    if (response.status < 400) {
-      setRecipeLoadObject((current) => {
-        const recipeIndex = current.data.findIndex(
-          (e) => e.id === responseJson.id
-        );
-        current.data[recipeIndex] = responseJson;
-        return { state: "ready", data: current.data };
+    try {
+      const response = await fetch(`http://localhost:8000/recipe/update/${recipeID}/${userID}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dtoIn),
       });
-      return responseJson;
-    } else {
+      const responseJson = await response.json();
+      if (response.status < 400) {
+        setRecipeLoadObject((current) => {
+          const updatedData = current.data.map((recipe) =>
+            recipe.id === recipeID ? responseJson : recipe
+          );
+          return { state: "ready", data: updatedData };
+        });
+      } else {
+        throw new Error(responseJson.error);
+      }
+    } catch (error) {
       setRecipeLoadObject((current) => ({
         state: "error",
         data: current.data,
-        error: responseJson,
+        error: error.message,
       }));
-      throw new Error(JSON.stringify(responseJson, null, 2));
+      console.error('Error updating recipe:', error);
     }
   }
 
   async function handleDelete(recipeID, userID) {
     setRecipeLoadObject((current) => ({ ...current, state: "pending" }));
-    const response = await fetch(`http://localhost:8000/recipe/delete/${recipeID}/${userID}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(),
-    });
-    const responseJson = await response.json();
-
-    if (response.status < 400) {
-      setRecipeLoadObject((current) => {
-        const recipeIndex = current.data.findIndex(
-          (e) => e.id === responseJson.id
-        );
-        current.data.splice(recipeIndex, 1);
-        return { state: "ready", data: current.data };
+    try {
+      const response = await fetch(`http://localhost:8000/recipe/delete/${recipeID}/${userID}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
       });
-      return responseJson;
-    } else {
+      const responseJson = await response.json();
+      if (response.status < 400) {
+        setRecipeLoadObject((current) => ({
+          state: "ready",
+          data: current.data.filter((recipe) => recipe.id !== recipeID),
+        }));
+      } else {
+        throw new Error(responseJson.error);
+      }
+    } catch (error) {
       setRecipeLoadObject((current) => ({
         state: "error",
         data: current.data,
-        error: responseJson,
+        error: error.message,
       }));
-      throw new Error(JSON.stringify(responseJson, null, 2));
+      console.error('Error deleting recipe:', error);
     }
   }
 
-
   const value = {
     state: recipeLoadObject.state,
-    recipeList: recipeLoadObject.data || [],
+    recipeList: recipeLoadObject.data,
+    setRecipeList: (newData) => setRecipeLoadObject((current) => ({ ...current, data: newData })), // Přidání setRecipeList do value objektu
     handlerMap: { handleCreate, handleUpdate, handleDelete },
   };
 
