@@ -16,6 +16,7 @@ function get(ratingId) {
   }
 }
 
+// Method to create rating in a file
 function create(rating) {
   try {
     rating.id = crypto.randomBytes(16).toString("hex");

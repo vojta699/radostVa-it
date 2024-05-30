@@ -38,7 +38,7 @@ const schema = {
     name: { type: "string", minLength: 3, maxLength: 20 },
     user_ID: { type: "string", minLength: 32, maxLength: 32 },
     countryOfOrigin: { enum: Object.values(Country) },
-    portion: { enum: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
+    portion: { enum: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
     materials: additionalSchemaMaterials,
     method: additionalSchemaMethod,
     imgName: { type: "string", minLength: 36, maxLength: 36 }

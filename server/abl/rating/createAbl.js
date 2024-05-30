@@ -35,11 +35,13 @@ async function CreateAbl(req, res) {
     // kontrola, zda uživatel již nehodnotil daný recept
 
     const ratingList = ratingDao.list();
-    const userHasRating = ratingList.some((r) => r.recipe_ID === rating.recipe_ID && r.user_ID === rating.user_ID);
+    const userHasRating = ratingList.find((r) => r.recipe_ID === rating.recipe_ID && r.user_ID === rating.user_ID);
+
     if (userHasRating) {
-      res.status(400).json({
+      res.status(300).json({
         code: "ratingAlreadyExists",
-        message: `Rating from this user already exist`,
+        message: `Rating from this user already exists`,
+        existingRatingId: userHasRating.id, // Vrátíme ID existujícího hodnocení
       });
       return;
     }
