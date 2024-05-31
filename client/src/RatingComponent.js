@@ -37,7 +37,11 @@ const RatingComponent = ({ recipeId }) => {
     try {
       const response = await fetch(`http://localhost:8000/recipe/avgRating/${recipeId}`);
       const data = await response.json();
-      setAverageRating(data.avgRating.toFixed(2));
+      if (data.avgRating === null){
+        setAverageRating(0)
+      } else {
+        setAverageRating(data.avgRating.toFixed(2));
+      }
     } catch (error) {
       console.error('Error fetching ratings:', error);
     }

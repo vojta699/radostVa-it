@@ -1,25 +1,21 @@
-import { useState, useEffect } from "react";
-// import { ImageContext } from "./ImageContext.js";
+import { useState, useEffect, useContext } from "react";
+import { ImageContext } from "./ImageContext.js";
 
 function RecipeDetail({ recipe }) {
-  
-  // const { base64 } = useContext(ImageContext);
-  const [base64, setBase64] = useState()
 
+  const [base64, setBase64] = useState()
+  const { ImagehandlerMap } = useContext(ImageContext);
+  const { fetchImage } = ImagehandlerMap
 
   useEffect(() => {
-    fetch(`http://localhost:8000/recipe/img/get/${recipe.imgName}`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.text();
-      })
-      .then(data => {
-        setBase64(data);
-      })
-      .catch(error => console.log(error));
-  }, [recipe.imgName]);
+    if (recipe.imgName) {
+      fetchImage(recipe.imgName)
+        .then(data => {
+          setBase64(data);
+        })
+        .catch(error => console.log(error));
+    }
+  }, [fetchImage, recipe.imgName]);
 
   return (
     <div style={{ display: "grid", rowGap: "4px" }}>

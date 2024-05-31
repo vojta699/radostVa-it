@@ -41,31 +41,9 @@ function RecipeProvider({ children }) {
     }
   }
 
-  async function handleCreateMessage(dtoIn) {
-    const response = await fetch(`http://localhost:8000/message/create`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(dtoIn),
-    });
-    const responseJson = await response.json();
-
-    if (response.status < 400) {
-      handleLoad();
-    } else {
-      setRecipeLoadObject((current) => ({
-        state: "error",
-        data: current.data,
-        error: responseJson.error,
-      }));
-    }
-  }
-
   const value = {
     state: recipeLoadObject.state,
-    recipe: recipeLoadObject.data,
-    handlerMap: { handleCreateMessage },
+    recipe: recipeLoadObject.data
   };
 
   return (

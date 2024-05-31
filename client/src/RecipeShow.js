@@ -1,27 +1,36 @@
-import { useState, useEffect } from "react";
+import React from 'react';
+import { useState, useEffect, useContext } from "react";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-// import { ImageContext } from "./ImageContext.js";
 import RatingComponent from "./RatingComponent"
+import { ImageContext } from "./ImageContext.js";
 
 function RecipeShow({ recipe }) {
-
-  // const { base64 } = useContext(ImageContext);
   const [base64, setBase64] = useState()
+  const { ImagehandlerMap } = useContext(ImageContext);
+  const { fetchImage } = ImagehandlerMap
 
   useEffect(() => {
-    fetch(`http://localhost:8000/recipe/img/get/${recipe.imgName}`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.text();
-      })
-      .then(data => {
-        setBase64(data);
-      })
-      .catch(error => console.log(error));
-  }, [recipe.imgName]);
+    if (recipe.imgName) {
+      fetchImage(recipe.imgName)
+        .then(data => {
+          setBase64(data);
+        })
+        .catch(error => console.log(error));
+    }
+  }, [fetchImage, recipe.imgName]);
+
+  function minutes() {
+    let time = ""
+    if(recipe.duration === 1){
+      time = "minuta"
+    } else if(recipe.duration > 1 && recipe.duration < 5){
+      time = "minuty"
+    } else {
+      time = "minut"
+    }
+    return time
+  }
 
   return (
     <>
@@ -42,7 +51,7 @@ function RecipeShow({ recipe }) {
             <div style={{ fontSize: "12px" }}>{recipe.countryOfOrigin}</div>
             <RatingComponent recipeId={recipe.id} />
             <br />
-            <div style={{ fontSize: "15px" }}>Čas: </div>
+            <div style={{ fontSize: "15px" }}>Čas: {recipe.duration} {minutes()}</div>
             <div style={{ fontSize: "15px" }}>Množství: {recipe.portion} porce</div>
           </Col>
 
@@ -55,12 +64,12 @@ function RecipeShow({ recipe }) {
         <Col md={6}>
           <h5>Suroviny:</h5>
           <Row>
-            {recipe.materials.map((material) => (
-
+            {recipe.materials.map((material, index) => (
+              <React.Fragment key={index}>
               <>
                 <Col md={6}>
                   <p
-                    key={material.id}
+                   
                     style={{
                       fontSize: "15px",
                     }}
@@ -70,7 +79,7 @@ function RecipeShow({ recipe }) {
                 </Col>
                 <Col md={6}>
                   <p
-                    key={material.id}
+                    
                     style={{
                       fontSize: "15px",
                     }}
@@ -79,7 +88,7 @@ function RecipeShow({ recipe }) {
                   </p>
                 </Col>
               </>
-
+              </React.Fragment>
             ))}
           </Row>
         </Col>
@@ -87,12 +96,14 @@ function RecipeShow({ recipe }) {
 
         <Col md={6}>
           <h5>Postup:</h5>
-          {recipe.method.map((method) => (
+          {recipe.method.map((method, index) => (
+            <React.Fragment key={index}>
             <p
-              key={method.id}
+              
             >
               {method.steps}
             </p>
+            </React.Fragment>
           ))}
         </Col>
       </Row>

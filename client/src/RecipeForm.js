@@ -1,6 +1,7 @@
 import { useContext, useState, useEffect } from "react";
 import { UserContext } from "./UserContext.js";
 import { RecipeListContext } from "./RecipeListContext.js";
+import { ImageContext } from "./ImageContext.js";
 
 
 import Modal from "react-bootstrap/Modal";
@@ -17,9 +18,11 @@ import { mdiLoading } from "@mdi/js";
 function RecipeForm({ setShowRecipeForm, recipe }) {
     const { state, handlerMap } = useContext(RecipeListContext);
     const { loggedInUser } = useContext(UserContext);
+    const { newImage, ImagehandlerMap } = useContext(ImageContext)
+    const { handleSubmitImg, handleDeleteImg } = ImagehandlerMap
     const [showAlert, setShowAlert] = useState(null);
     const isPending = state === "pending";
-
+    console.log(newImage);
     // Enumy ----------------------------------------------------------------------------------------------
     const [countryOptions, setCountryOptions] = useState([])
     const [selectedCountryOption, setSelectedCountryOption] = useState(recipe.countryOfOrigin || "")
@@ -80,6 +83,7 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
 
 
 
+
     const handleFileChange = (event) => {
         const selectedFile = event.target.files[0];
         setFile(selectedFile);
@@ -99,34 +103,6 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
     console.log(file);
     console.log(image);
     console.log(imageToDelete);
-
-    // Obrázky
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        if (!file) {
-            alert("Please select a file first!");
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('image', file);
-        console.log(formData);
-        try {
-            const response = await fetch('http://localhost:8000/recipe/img/upload', {
-                method: 'POST',
-                body: formData
-            });
-
-            if (response.ok) {
-                alert('File uploaded successfully!');
-            } else {
-                alert('File upload failed!');
-            }
-        } catch (error) {
-            console.error('Error uploading file:', error);
-            alert('Error uploading file!');
-        }
-    };
 
     // Fetch Enumů --------------------------------------------------------------------------------------------
     useEffect(() => {
@@ -174,13 +150,33 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
                     var formData = Object.fromEntries(new FormData(e.target))
                     Object.assign(formData, { method, materials, "user_ID": loggedInUser.id })
                     formData.portion = parseInt(formData.portion)
+                    formData.duration = parseInt(formData.duration)
 
                     try {
+                        let uploadedImageName = null;
+                        if (file !== null) {
+                            uploadedImageName = await handleSubmitImg(file);
+                        }
 
                         if (recipe.id) {
-                            formData.user_ID = undefined
+                            formData.user_ID = undefined;
+                            if (uploadedImageName) {
+                                Object.assign(formData, { "imgName": uploadedImageName });
+                                if (imageToDelete) {
+                                    await handleDeleteImg(imageToDelete);
+                                }
+                            } else if (!uploadedImageName && imageToDelete) {
+                                await handleDeleteImg(imageToDelete);
+                                Object.assign(formData, { "imgName": image });
+                                console.log(formData);
+                            }
+
                             await handlerMap.handleUpdate(formData, recipe.id, loggedInUser.id);
                         } else {
+                            if (uploadedImageName) {
+                                Object.assign(formData, { "imgName": uploadedImageName });
+                            }
+
                             await handlerMap.handleCreate(formData);
                         }
 
@@ -250,9 +246,23 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
                         </Form.Select>
                     </Form.Group>
 
-                    {/* Porce ********************************************************************/}
+                    {/* Doba přípravy + porce ****************************************************************/}
 
                     <Form.Group className="mb-3" controlId="formBasicEmail">
+                    <Row className="mb-3">
+                            <Col md={8}>
+                        <Form.Label>Dobra přípravy</Form.Label>
+                        <Form.Control
+                            type="number"
+                            name="duration"
+                            placeholder="Uvedtě dobu potřebnou na přípravu receptu v minutách. Max 300."
+                            required
+                            defaultValue={recipe.duration}
+                            min="1"
+                            max="300"
+                        />
+                        </Col>
+                        <Col md={4}>
                         <Form.Label>Počet porcí</Form.Label>
                         <Form.Control
                             type="number"
@@ -263,6 +273,8 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
                             min="1"
                             max="10"
                         />
+                        </Col>
+                        </Row>
                     </Form.Group>
 
                     {/* Suroviny ********************************************************************/}
@@ -437,7 +449,7 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
                     <Form.Group
                         as={Col}
                         className="mb-3"
-                        
+
                     >
 
                         {(image === "66dcf3ba9b55edc3abda45e142b02f46.png") ?

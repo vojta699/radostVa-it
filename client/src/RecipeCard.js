@@ -16,16 +16,6 @@ function RecipeCard({ recipe, setShowRecipeForm }) {
 
   const navigate = useNavigate();
 
-
-  // smazat recept
-  async function deleteRecipe() {
-    try {
-      await handlerMap.handleDelete(recipe.id, loggedInUser.id);
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
   return (
     <div className="card border-0 shadow rounded" style={componentStyle()}>
 
@@ -47,7 +37,7 @@ function RecipeCard({ recipe, setShowRecipeForm }) {
               <Button style={buttonsStyle()} onClick={() => setShowRecipeForm(recipe)} size={"sm"}>
                 <Icon path={mdiPencil} size={0.7} />
               </Button>
-              <Button style={buttonsStyle()} onClick={() => deleteRecipe()} size={"sm"}>
+              <Button style={buttonsStyle()} onClick={() => handlerMap.handleDelete(recipe.id, loggedInUser.id)} size={"sm"}>
                 <Icon path={mdiDelete} size={0.7} />
               </Button>
             </div>
