@@ -13,7 +13,12 @@ async function ListSortByRatingAbl(req, res) {
             for (let i = 0; i < filteredObjects.length; i++) {
                 ratingSum = ratingSum + filteredObjects[i].rating
             }
-            let rating = ratingSum / filteredObjects.length // průměrné hodnocení
+            let rating
+            if (filteredObjects.length === 0){
+                rating = 0
+            } else {
+                rating = ratingSum / filteredObjects.length // průměrné hodnocení
+            }
             recipeList[i].avgRating = rating
         }
         // Seřadíme recepty podle průměrného hodnocení od nejvyšší hodnoty po nejmenší
