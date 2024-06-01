@@ -16,13 +16,10 @@ function RecipeRoute() {
     case "ready":
       child = (
         <>
-
           <div
             className="card border-0 shadow rounded"
             style={componentStyle()}
           >
-
-
             <RecipeShow recipe={recipe} />
             <div style={{ display:"flex", justifyContent:"center"}}>
             <Button style={{ marginTop:"15px", maxWidth:"100px" }} onClick={() => navigate("/")}>
@@ -30,9 +27,6 @@ function RecipeRoute() {
             </Button>
             </div>
           </div>
-
-
-
         </>
       );
       break;

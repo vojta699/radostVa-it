@@ -1,16 +1,10 @@
-import { useEffect, useState, useContext } from "react";
+import { useState } from "react";
 import { ImageContext } from "./ImageContext.js";
-import { RecipeListContext } from "./RecipeListContext.js";
 
 function ImageProvider({ children }) {
-  const [imageLoadObject, setImageLoadObject] = useState({
-    state: "ready",
-    error: null,
-    data: null,
-  });
   const [base64, setBase64] = useState(null);
-  const [newImage, setNewImage] = useState(null)
 
+  // FETCH get obrázku
   async function fetchImage(imageName) {
     try {
       const response = await fetch(`http://localhost:8000/recipe/img/get/${imageName}`);
@@ -26,6 +20,7 @@ function ImageProvider({ children }) {
     }
   }
 
+  // FETCH upload obrázku
   async function handleSubmitImg(file) {
     const formData = new FormData();
     formData.append('file', file);
@@ -38,7 +33,6 @@ function ImageProvider({ children }) {
 
       if (response.ok) {
         const data = await response.json();
-        setNewImage(data.filename);
         console.log('File uploaded successfully!');
         return data.filename; // Vrátí název nového obrázku
       } else {
@@ -51,6 +45,7 @@ function ImageProvider({ children }) {
     }
   };
 
+  // FETCH delete obrázku
   async function handleDeleteImg(imageToDelete) {
     const deleteUrl = `http://localhost:8000/recipe/img/delete/${imageToDelete}`;
     try {
@@ -68,11 +63,8 @@ function ImageProvider({ children }) {
   };
 
   const value = {
-    state: imageLoadObject.state,
-    imageList: imageLoadObject.data || [],
     ImagehandlerMap: { fetchImage, handleSubmitImg, handleDeleteImg },
-    base64,
-    newImage
+    base64
   };
 
   return (

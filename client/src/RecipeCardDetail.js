@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { ImageContext } from "./ImageContext.js";
 
-function RecipeDetail({ recipe }) {
+function RecipeCardDetail({ recipe }) {
 
   const [base64, setBase64] = useState()
   const { ImagehandlerMap } = useContext(ImageContext);
@@ -30,4 +30,4 @@ function RecipeDetail({ recipe }) {
   );
 }
 
-export default RecipeDetail;
+export default RecipeCardDetail;

@@ -10,6 +10,7 @@ function RecipeShow({ recipe }) {
   const { ImagehandlerMap } = useContext(ImageContext);
   const { fetchImage } = ImagehandlerMap
 
+  // FETCH obrázek
   useEffect(() => {
     if (recipe.imgName) {
       fetchImage(recipe.imgName)
@@ -20,11 +21,12 @@ function RecipeShow({ recipe }) {
     }
   }, [fetchImage, recipe.imgName]);
 
+  // upráva minut dle čísla
   function minutes() {
     let time = ""
-    if(recipe.duration === 1){
+    if (recipe.duration === 1) {
       time = "minuta"
-    } else if(recipe.duration > 1 && recipe.duration < 5){
+    } else if (recipe.duration > 1 && recipe.duration < 5) {
       time = "minuty"
     } else {
       time = "minut"
@@ -34,17 +36,17 @@ function RecipeShow({ recipe }) {
 
   return (
     <>
-    <div >
-    
-    <Row>
-        <Col md={6}>
+      <div >
+        {/* INFO ****************************************************************/}
+        <Row>
+          <Col md={6}>
             <div style={{ display: "grid", rowGap: "4px" }}>
               <div>{base64 ? (
                 <img style={{ maxWidth: "50vh", maxHeight: "35vh" }} src={`data:image/jpeg;base64,${base64}`} alt="" />
               ) : (
                 <p>Loading...</p>
               )}</div>
-              </div>
+            </div>
           </Col>
           <Col md={6}>
             <div style={{ fontSize: "22px" }}>{recipe.name}</div>
@@ -54,60 +56,52 @@ function RecipeShow({ recipe }) {
             <div style={{ fontSize: "15px" }}>Čas: {recipe.duration} {minutes()}</div>
             <div style={{ fontSize: "15px" }}>Množství: {recipe.portion} porce</div>
           </Col>
-
-
-      </Row >
-
-      <br />
-      <Row>
-
-        <Col md={6}>
-          <h5>Suroviny:</h5>
-          <Row>
-            {recipe.materials.map((material, index) => (
+        </Row >
+        <br />
+        <Row>
+          {/* Suroviny ****************************************************************/}
+          <Col md={6}>
+            <h5>Suroviny:</h5>
+            <Row>
+              {recipe.materials.map((material, index) => (
+                <React.Fragment key={index}>
+                  <>
+                    <Col md={6}>
+                      <p
+                        style={{
+                          fontSize: "15px",
+                        }}
+                      >
+                        {material.name}
+                      </p>
+                    </Col>
+                    <Col md={6}>
+                      <p
+                        style={{
+                          fontSize: "15px",
+                        }}
+                      >
+                        {material.value}{" "}{material.unit}
+                      </p>
+                    </Col>
+                  </>
+                </React.Fragment>
+              ))}
+            </Row>
+          </Col>
+          {/* postup *****************************************************************/}
+          <Col md={6}>
+            <h5>Postup:</h5>
+            {recipe.method.map((method, index) => (
               <React.Fragment key={index}>
-              <>
-                <Col md={6}>
-                  <p
-                   
-                    style={{
-                      fontSize: "15px",
-                    }}
-                  >
-                    {material.name}
-                  </p>
-                </Col>
-                <Col md={6}>
-                  <p
-                    
-                    style={{
-                      fontSize: "15px",
-                    }}
-                  >
-                    {material.value}{" "}{material.unit}
-                  </p>
-                </Col>
-              </>
+                <p>
+                  {index + 1}. {method.steps}
+                </p>
               </React.Fragment>
             ))}
-          </Row>
-        </Col>
-
-
-        <Col md={6}>
-          <h5>Postup:</h5>
-          {recipe.method.map((method, index) => (
-            <React.Fragment key={index}>
-            <p
-              
-            >
-              {method.steps}
-            </p>
-            </React.Fragment>
-          ))}
-        </Col>
-      </Row>
-    </div >
+          </Col>
+        </Row>
+      </div >
     </>
   );
 }
