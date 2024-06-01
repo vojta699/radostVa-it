@@ -4,7 +4,7 @@ import { RecipeContext } from "./RecipeContext";
 import Button from "react-bootstrap/esm/Button.js";
 import { useNavigate } from "react-router-dom";
 
-import RecipeShow from "./RecipeShow";
+import RecipeDetail from "./RecipeDetail";
 
 function RecipeRoute() {
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ function RecipeRoute() {
             className="card border-0 shadow rounded"
             style={componentStyle()}
           >
-            <RecipeShow recipe={recipe} />
+            <RecipeDetail recipe={recipe} />
             <div style={{ display:"flex", justifyContent:"center"}}>
             <Button style={{ marginTop:"15px", maxWidth:"100px" }} onClick={() => navigate("/")}>
               Zpět

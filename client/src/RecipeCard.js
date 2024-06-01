@@ -3,7 +3,7 @@ import { useContext, useState } from "react";
 import { RecipeListContext } from "./RecipeListContext.js";
 import { UserContext } from "./UserContext.js";
 
-import RecipeCardDetail from "./RecipeCardDetail";
+import RecipeCardImage from "./RecipeCardImage.js";
 import RatingComponent from "./RatingComponent"
 
 import Button from "react-bootstrap/esm/Button.js";
@@ -27,7 +27,8 @@ function RecipeCard({ recipe, setShowRecipeForm }) {
   return (
     <div className="card border-0 shadow rounded" style={componentStyle()}>
 
-      <RecipeCardDetail recipe={recipe} />
+      <RecipeCardImage recipe={recipe} />
+      <div style={{ fontSize: "22px" }}>{recipe.name}</div>
       <RatingComponent recipeId={recipe.id} />
       {recipe.countryOfOrigin}
       <div

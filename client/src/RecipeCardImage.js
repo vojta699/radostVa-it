@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { ImageContext } from "./ImageContext.js";
 
-function RecipeCardDetail({ recipe }) {
+function RecipeCardImage({ recipe }) {
 
   const [base64, setBase64] = useState()
   const { ImagehandlerMap } = useContext(ImageContext);
@@ -24,10 +24,8 @@ function RecipeCardDetail({ recipe }) {
       ) : (
         <p>Loading...</p>
       )}</div>
-      <div style={{ fontSize: "22px" }}>{recipe.name}</div>
-
     </div>
   );
 }
 
-export default RecipeCardDetail;
+export default RecipeCardImage;

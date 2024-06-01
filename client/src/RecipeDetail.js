@@ -2,10 +2,10 @@ import React from 'react';
 import { useState, useEffect, useContext } from "react";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import RatingComponent from "./RatingComponent"
+import RatingComponent from "./RatingComponent.js"
 import { ImageContext } from "./ImageContext.js";
 
-function RecipeShow({ recipe }) {
+function RecipeDetail({ recipe }) {
   const [base64, setBase64] = useState()
   const { ImagehandlerMap } = useContext(ImageContext);
   const { fetchImage } = ImagehandlerMap
@@ -106,4 +106,4 @@ function RecipeShow({ recipe }) {
   );
 }
 
-export default RecipeShow;
+export default RecipeDetail;

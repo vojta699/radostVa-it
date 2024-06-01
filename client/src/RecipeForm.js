@@ -282,7 +282,7 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
                     {/* Název receptu ********************************************************************/}
 
                     <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <Form.Label>Název receptu</Form.Label>
+                        <Form.Label>Název receptu *</Form.Label>
                         <Form.Control
                             type="text"
                             name="name"
@@ -296,7 +296,7 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
                     {/* Země původu ********************************************************************/}
 
                     <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <Form.Label>Země původu</Form.Label>
+                        <Form.Label>Země původu *</Form.Label>
                         <Form.Select
                             name="countryOfOrigin"
                             value={selectedCountryOption}
@@ -321,7 +321,7 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
                     <Form.Group className="mb-3" controlId="formBasicEmail">
                         <Row className="mb-3">
                             <Col md={8}>
-                                <Form.Label>Dobra přípravy</Form.Label>
+                                <Form.Label>Dobra přípravy *</Form.Label>
                                 <Form.Control
                                     type="number"
                                     name="duration"
@@ -333,7 +333,7 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
                                 />
                             </Col>
                             <Col md={4}>
-                                <Form.Label>Počet porcí</Form.Label>
+                                <Form.Label>Počet porcí *</Form.Label>
                                 <Form.Control
                                     type="number"
                                     name="portion"
@@ -349,7 +349,7 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
 
                     {/* Suroviny ********************************************************************/}
                     <Form.Group as={Col} className="mb-3" controlId="formBasicEmail">
-                        <Form.Label>Suroviny</Form.Label>
+                        <Form.Label>Suroviny *</Form.Label>
                         <Row className="mb-3">
                             <Col md={6}>
                                 <Form.Control
@@ -450,7 +450,7 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
                     {/* Postup ********************************************************************/}
 
                     <Form.Group as={Col} className="mb-3" controlId="formBasicEmail">
-                        <Form.Label>Postup</Form.Label>
+                        <Form.Label>Postup *</Form.Label>
                         <Row className="mb-3">
                             <Col md={12}>
                                 <Form.Control
@@ -543,21 +543,25 @@ function RecipeForm({ setShowRecipeForm, recipe }) {
 
                     {/* ´-------------------------------------------------------------------- */}
                 </Modal.Body>
-                <Modal.Footer>
-                    <Button
-                        variant="danger"
-                        onClick={() => setShowRecipeForm(false)}
-                        disabled={isPending}
-                    >
-                        Zrušit
-                    </Button>
-                    <Button
-                        type="submit"
-                        variant="primary"
-                        disabled={!materialsFilled || !methodsFilled || isPending}
-                    >
-                        {recipe.id ? "Upravit" : "Vytvořit"}
-                    </Button>
+                <Modal.Footer style={{ display: "flex", justifyContent: "space-between" }}>
+                    <p style={{ fontSize: "12px" }}>* povinné pole</p>
+                    <div>
+                        <Button
+                            style={{ marginRight: "10px" }}
+                            variant="danger"
+                            onClick={() => setShowRecipeForm(false)}
+                            disabled={isPending}
+                        >
+                            Zrušit
+                        </Button>
+                        <Button
+                            type="submit"
+                            variant="primary"
+                            disabled={!materialsFilled || !methodsFilled || isPending}
+                        >
+                            {recipe.id ? "Upravit" : "Vytvořit"}
+                        </Button>
+                    </div>
                 </Modal.Footer>
             </Form>
         </Modal>
