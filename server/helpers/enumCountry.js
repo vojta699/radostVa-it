@@ -233,6 +233,7 @@ const Country = {
   Ukraine: "Ukrajina",
   UAE: "Spojené arabské emiráty",
   UK: "Spojené království",
+  USA: "Spojené státy americké",
   Uruguay: "Uruguay",
   Uzbekistan: "Uzbekistán",
   Vanuatu: "Vanuatu",

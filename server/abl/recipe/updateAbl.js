@@ -13,7 +13,7 @@ const additionalSchemaMaterials = {
   items: {
     type: "object",
     properties: {
-      name: { type: "string", minLength: 3, maxLength: 20 },
+      name: { type: "string", minLength: 3, maxLength: 30 },
       value: { type: "number" },
       unit: { enum: Object.values(Units) }
     },
@@ -36,7 +36,7 @@ const schema = {
   type: "object",
   properties: {
     id: { type: "string", minLength: 32, maxLength: 32 },
-    name: { type: "string", minLength: 3, maxLength: 20 },
+    name: { type: "string", minLength: 3, maxLength: 30 },
     user_ID: { type: "string", minLength: 32, maxLength: 32 },
     countryOfOrigin: { enum: Object.values(Country) },
     duration: { type: "number", minimum: 1, maximum: 300 },
