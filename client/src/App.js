@@ -12,21 +12,32 @@ function App() {
   return (
     <div style={componentStyle()}>
       <UserProvider>
-        <RecipeListProvider>
-        <ImageProvider>
         <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Layout />}>
-                <Route index element={<Dashboard />} />
-                <Route path="recipeDetail" element={<RecipeProvider>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route
+                index
+                element={
+                  <RecipeListProvider>
+                    <ImageProvider>
+                      <Dashboard />
+                    </ImageProvider>
+                  </RecipeListProvider>
+                }
+              />
+              <Route
+                path="recipeDetail"
+                element={
+                  <RecipeProvider>
+                    <ImageProvider>
                       <RecipeRoute />
-                    </RecipeProvider>}/>
-                <Route path="*" element={"not found"} />
-              </Route>
-            </Routes>
-          </BrowserRouter>
-          </ImageProvider>
-          </RecipeListProvider>
+                    </ImageProvider>
+                  </RecipeProvider>}
+              />
+              <Route path="*" element={"not found"} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
       </UserProvider>
     </div>
   );
