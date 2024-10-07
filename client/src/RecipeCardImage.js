@@ -15,7 +15,7 @@ function RecipeCardImage({ recipe }) {
         })
         .catch(error => console.log(error));
     }
-  }, [fetchImage, recipe.imgName]);
+  }, [recipe.imgName]);
 
   return (
     <div style={{ display: "grid", rowGap: "4px" }}>
